@@ -27,11 +27,17 @@ app = typer.Typer(
 
 @app.callback()
 def main_callback(
-    version: bool = typer.Option(False, "--version", help="Pokaż wersję narzędzia."),
+    version: bool = typer.Option(
+        False,
+        "--version",
+        help="Pokaż wersję narzędzia.",
+        is_eager=True,
+    ),
 ) -> None:
     """Punkt wejścia do narzędzia create-python-app."""
     if version:
         typer.echo(__version__)
+        raise typer.Exit()
 
 
 @app.command("create")
