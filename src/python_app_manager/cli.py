@@ -14,6 +14,7 @@ from python_app_manager.services.status import StatusService
 from python_app_manager.services.application import ApplicationService
 from python_app_manager.utils.prompts import prompt_mysql_password
 from python_app_manager.utils.rendering import TemplateRenderer
+from python_app_manager.utils.paths import templates_directory
 
 app = typer.Typer(
     name="create-python-app",
@@ -41,7 +42,7 @@ def create_application(
 ) -> None:
     """Utwórz aplikację Python wraz z konfiguracją systemową."""
     mysql_password = prompt_mysql_password() if with_mysql else None
-    renderer = TemplateRenderer(Path(__file__).parents[2] / "templates")
+    renderer = TemplateRenderer(templates_directory())
     repository = StateRepository(Path("/var/lib/create-python-app/state.db"))
     with exclusive_lock(Path("/var/lock/create-python-app.lock")):
         result = ApplicationService(repository=repository).create(

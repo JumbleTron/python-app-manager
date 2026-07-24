@@ -24,6 +24,9 @@ dev = [
     "ruff>=0.6,<1.0",
     "mypy>=1.10,<2.0",
 ]
+build = [
+    "pyinstaller>=6.0,<7.0",
+]
 
 [project.scripts]
 create-python-app = "python_app_manager.cli:main"

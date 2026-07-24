@@ -46,6 +46,39 @@ W środowisku developerskim można zainstalować również testy i narzędzia ja
 .venv/bin/pytest
 ```
 
+### Pojedyncza binarka
+
+Projekt może być dystrybuowany jako jeden plik wykonywalny budowany przez PyInstaller.
+Binarkę należy budować na Ubuntu 24.04, najlepiej w GitHub Actions, a następnie skopiować
+na VPS:
+
+```bash
+scp dist/create-python-app root@vps.example:/tmp/create-python-app
+ssh root@vps.example \
+    'install -o root -g root -m 0755 /tmp/create-python-app /usr/local/bin/create-python-app'
+```
+
+Lokalny build na Ubuntu 24.04:
+
+```bash
+python3 -m venv .venv
+.venv/bin/python -m pip install -e '.[build]'
+.venv/bin/pyinstaller --clean --noconfirm create-python-app.spec
+./dist/create-python-app --version
+```
+
+GitHub Actions buduje binarkę automatycznie dla taga `v*`, np.:
+
+```bash
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+Binarka zawiera interpreter Python, biblioteki i szablony Jinja2, ale nadal wymaga na VPS
+programów systemowych `systemctl`, `nginx`, `mysql`, `groupadd`, `useradd` i `usermod`.
+PyInstaller nie pakuje glibc, dlatego binarki Linux nie należy budować na macOS ani
+przenosić bezpośrednio między niekompatybilnymi dystrybucjami.
+
 Większość komend provisioningowych wymaga uruchomienia jako root, ponieważ modyfikuje
 `/etc`, `/var/www`, systemd, nginx i konta systemowe.
 
