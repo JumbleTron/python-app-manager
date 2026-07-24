@@ -13,7 +13,7 @@ def templates_directory() -> Path:
     :raises FileNotFoundError: Gdy szablony nie zostały dołączone do artefaktu.
     """
     if getattr(sys, "frozen", False):
-        bundle_root = Path(getattr(sys, "_MEIPASS"))
+        bundle_root = Path(sys._MEIPASS)  # type: ignore[attr-defined]
         directory = bundle_root / "templates"
     else:
         directory = Path(__file__).resolve().parents[3] / "templates"

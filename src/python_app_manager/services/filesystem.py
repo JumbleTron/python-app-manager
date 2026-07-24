@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import grp
 import os
+import pwd
 import shutil
 from pathlib import Path
 
@@ -71,9 +73,6 @@ class FilesystemService:
 
     @staticmethod
     def _chown(path: Path, user: str, group: str) -> None:
-        import pwd
-        import grp
-
         uid = pwd.getpwnam(user).pw_uid
         gid = grp.getgrnam(group).gr_gid
         os.chown(path, uid, gid)

@@ -6,8 +6,8 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from python_app_manager.domain.models import ApplicationRecord, ApplicationSpec
-from python_app_manager.infrastructure.database import StateRepository
 from python_app_manager.infrastructure.command_runner import CommandRunner
+from python_app_manager.infrastructure.database import StateRepository
 from python_app_manager.services.filesystem import FilesystemService
 from python_app_manager.services.mysql import MysqlApplicationResources, MysqlService
 from python_app_manager.services.nginx import NginxService

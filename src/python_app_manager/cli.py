@@ -2,19 +2,21 @@
 
 from __future__ import annotations
 
-import typer
 from pathlib import Path
+
+import typer
 
 from python_app_manager import __version__
 from python_app_manager.domain.models import ApplicationSpec
+from python_app_manager.infrastructure.command_runner import CommandRunner
 from python_app_manager.infrastructure.database import StateRepository
 from python_app_manager.infrastructure.locks import exclusive_lock
+from python_app_manager.services.application import ApplicationService
 from python_app_manager.services.removal import RemovalService
 from python_app_manager.services.status import StatusService
-from python_app_manager.services.application import ApplicationService
+from python_app_manager.utils.paths import templates_directory
 from python_app_manager.utils.prompts import prompt_mysql_password
 from python_app_manager.utils.rendering import TemplateRenderer
-from python_app_manager.utils.paths import templates_directory
 
 app = typer.Typer(
     name="create-python-app",
@@ -68,7 +70,7 @@ def list_applications() -> None:
         return
     typer.echo("NAME\tPORT\tDOMAIN\tAPP USER\tSTATUS")
     for row in rows:
-        status = StatusService().service_status(row["service_name"])
+        status = StatusService(CommandRunner()).service_status(row["service_name"])
         typer.echo(f"{row['name']}\t{row['port']}\t{row['domain']}\t{row['app_user']}\t{status}")
 
 

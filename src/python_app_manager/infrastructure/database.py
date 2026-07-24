@@ -3,9 +3,8 @@
 from __future__ import annotations
 
 import sqlite3
-from collections.abc import Callable, Iterator
-from contextlib import contextmanager
-from datetime import datetime, timezone
+from collections.abc import Callable
+from datetime import UTC, datetime
 from pathlib import Path
 
 from python_app_manager.domain.exceptions import (
@@ -104,7 +103,7 @@ class StateRepository:
         :param record: Metadane aplikacji; nie powinny zawierać sekretów.
         :raises ApplicationAlreadyExistsError: Gdy nazwa lub usługa już istnieje.
         """
-        now = datetime.now(timezone.utc).isoformat()
+        now = datetime.now(UTC).isoformat()
         try:
             with self._connect() as connection:
                 connection.execute(
