@@ -79,6 +79,60 @@ programów systemowych `systemctl`, `nginx`, `mysql`, `groupadd`, `useradd` i `u
 PyInstaller nie pakuje glibc, dlatego binarki Linux nie należy budować na macOS ani
 przenosić bezpośrednio między niekompatybilnymi dystrybucjami.
 
+## Środowisko Docker
+
+Docker służy do powtarzalnego developmentu, testów, lintingu, type-checkingu, lokalnego
+MySQL i budowania binarki. Nie używamy kontenera do modyfikowania hostowego systemd,
+nginx ani kont użytkowników — te operacje muszą być wykonywane bezpośrednio na VPS.
+
+Wymagany jest Docker z Docker Compose:
+
+```bash
+docker compose version
+```
+
+Zbudowanie obrazu:
+
+```bash
+make docker-build
+```
+
+Testy:
+
+```bash
+make docker-test
+```
+
+Ruff i mypy:
+
+```bash
+make docker-lint
+make docker-typecheck
+```
+
+Lokalny MySQL:
+
+```bash
+make docker-up
+```
+
+Kontener MySQL jest dostępny z hosta pod `127.0.0.1:3307`. Dane są przechowywane w
+wolumenie `mysql_data`. Zatrzymanie środowiska:
+
+```bash
+make docker-down
+```
+
+Budowa binarki:
+
+```bash
+make docker-binary
+./dist/create-python-app --version
+```
+
+Wynik znajduje się w `dist/create-python-app` i można go skopiować na VPS zgodnie z
+instrukcją instalacji powyżej.
+
 Większość komend provisioningowych wymaga uruchomienia jako root, ponieważ modyfikuje
 `/etc`, `/var/www`, systemd, nginx i konta systemowe.
 
