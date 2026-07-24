@@ -1,0 +1,24 @@
+FROM ubuntu:24.04
+
+ENV container=docker \
+    DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update \
+    && apt-get install --no-install-recommends -y \
+        ca-certificates \
+        curl \
+        mysql-server \
+        nginx \
+        python3 \
+        python3-venv \
+        sudo \
+        systemd \
+        systemd-sysv \
+    && useradd --create-home --shell /bin/bash gitlab \
+    && rm -f /etc/nginx/sites-enabled/default \
+    && mkdir -p /var/www/apps /var/lib/create-python-app /var/lock \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+STOPSIGNAL SIGRTMIN+3
+CMD ["/sbin/init"]

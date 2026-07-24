@@ -207,6 +207,41 @@ make docker-binary
 ./dist/create-python-app --version
 ```
 
+Lokalny smoke test gotowej binarki nie wymaga taga, GitHub Actions ani wysyłania pliku na
+serwer:
+
+```bash
+make docker-binary-test
+```
+
+Ta komenda buduje `dist/create-python-app` w kontenerze, a następnie uruchamia dokładnie
+ten zbudowany plik z opcjami `--version` i `--help`. Dopiero po pozytywnym wyniku można
+utworzyć tag i opublikować release.
+
+### Pełny test provisioningu VPS
+
+Do testowania integracji z prawdziwym Ubuntu 24.04, systemd, nginx, MySQL, `useradd` i
+uprawnieniami służy osobny kontener uprzywilejowany:
+
+```bash
+make integration-test
+```
+
+Test wykonuje pełny scenariusz:
+
+1. buduje binarkę PyInstaller;
+2. uruchamia kontener Ubuntu 24.04 z systemd jako PID 1;
+3. startuje MySQL i nginx;
+4. tworzy usera/grupę aplikacji oraz wpis w SQLite;
+5. tworzy bazę i użytkownika MySQL;
+6. instaluje i uruchamia usługę systemd;
+7. sprawdza odpowiedź przez nginx;
+8. usuwa kontener i jego wolumeny.
+
+Kontener integration wymaga działającego Docker Engine oraz trybu `privileged`, ponieważ
+testuje systemd i operacje administracyjne. Nie uruchamiaj tego profilu na produkcyjnym
+VPS — jest przeznaczony dla izolowanego środowiska testowego.
+
 Wynik znajduje się w `dist/create-python-app` i można go skopiować na VPS zgodnie z
 instrukcją instalacji powyżej.
 
