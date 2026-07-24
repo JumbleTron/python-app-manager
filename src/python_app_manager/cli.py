@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import sys
 from pathlib import Path
 
 import typer
@@ -120,6 +121,12 @@ def remove_application(
 
 def main() -> None:
     """Uruchom aplikację CLI."""
+    # Obsługa przed Typerem jest celowa: w trybie one-file PyInstaller
+    # niektóre wersje Typera mogą zgłosić brak komendy zanim callback
+    # aplikacji obsłuży eager option.
+    if len(sys.argv) > 1 and sys.argv[1] == "--version":
+        typer.echo(__version__)
+        return
     app()
 
 
