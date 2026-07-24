@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "create-python-app"
-version = "0.1.0"
+version = "1.1.0"
 description = "Production-oriented CLI for managing Python applications on Ubuntu."
 readme = "README.md"
 requires-python = ">=3.12"

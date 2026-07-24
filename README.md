@@ -53,9 +53,9 @@ Binarkę należy budować na Ubuntu 24.04, najlepiej w GitHub Actions, a następ
 na VPS:
 
 ```bash
-scp dist/create-python-app root@vps.example:/tmp/create-python-app
-ssh root@vps.example \
-    'install -o root -g root -m 0755 /tmp/create-python-app /usr/local/bin/create-python-app'
+scp -P 2222 dist/create-python-app deploy@vps.example:/tmp/create-python-app
+ssh -p 2222 deploy@vps.example \
+    'sudo install -o root -g root -m 0755 /tmp/create-python-app /usr/local/bin/create-python-app'
 ```
 
 Lokalny build na Ubuntu 24.04:
@@ -70,8 +70,85 @@ python3 -m venv .venv
 GitHub Actions buduje binarkę automatycznie dla taga `v*`, np.:
 
 ```bash
-git tag v0.1.0
-git push origin v0.1.0
+git tag v1.1.0
+git push origin v1.1.0
+```
+
+Po zakończeniu workflow binarka jest dostępna w repozytorium w sekcji **Releases** jako:
+
+```text
+create-python-app
+create-python-app.sha256
+```
+
+Jeżeli logowanie SSH jako `root` jest wyłączone, użyj zwykłego użytkownika administracyjnego
+posiadającego `sudo`, np. `deploy` albo `ubuntu`:
+
+```bash
+scp -P 2222 create-python-app deploy@VPS:/tmp/create-python-app
+scp -P 2222 create-python-app.sha256 deploy@VPS:/tmp/create-python-app.sha256
+```
+
+Następnie na VPS:
+
+```bash
+ssh -p 2222 deploy@VPS
+sha256sum -c /tmp/create-python-app.sha256
+sudo install -o root -g root -m 0755 \
+    /tmp/create-python-app \
+    /usr/local/bin/create-python-app
+create-python-app --version
+```
+
+W przykładach `2222` zastąp rzeczywistym portem SSH VPS. Dla `scp` port podaje się jako
+`-P` (wielkie `P`), a dla `ssh` jako `-p` (małe `p`).
+
+Możesz również zapisać połączenie w `~/.ssh/config`:
+
+```sshconfig
+Host moj-vps
+    HostName vps.example.com
+    User deploy
+    Port 2222
+```
+
+Wtedy kopiowanie wygląda prościej:
+
+```bash
+scp create-python-app moj-vps:/tmp/create-python-app
+ssh moj-vps
+```
+
+Można również pobrać plik bezpośrednio na VPS:
+
+```bash
+curl -fL -o /tmp/create-python-app \
+  https://github.com/OWNER/python-app-manager/releases/download/v1.1.0/create-python-app
+curl -fL -o /tmp/create-python-app.sha256 \
+  https://github.com/OWNER/python-app-manager/releases/download/v1.1.0/create-python-app.sha256
+cd /tmp
+sha256sum -c create-python-app.sha256
+sudo install -o root -g root -m 0755 \
+  create-python-app \
+  /usr/local/bin/create-python-app
+```
+
+Sama instalacja binarki nie wymaga roota. Można trzymać ją w katalogu użytkownika:
+
+```bash
+mkdir -p "$HOME/.local/bin"
+install -m 0755 /tmp/create-python-app "$HOME/.local/bin/create-python-app"
+export PATH="$HOME/.local/bin:$PATH"
+create-python-app --version
+```
+
+Provisioning aplikacji nadal wymaga `sudo`, ponieważ narzędzie tworzy userów, grupy,
+unity systemd, konfigurację nginx i katalogi w `/var/www`:
+
+```bash
+sudo create-python-app create \
+  --name raporty \
+  --domain raporty.example.pl
 ```
 
 Binarka zawiera interpreter Python, biblioteki i szablony Jinja2, ale nadal wymaga na VPS
