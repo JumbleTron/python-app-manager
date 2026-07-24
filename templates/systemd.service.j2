@@ -1,0 +1,22 @@
+[Unit]
+Description=Python application {{ app_name }}
+After=network.target
+
+[Service]
+Type=simple
+User={{ app_user }}
+Group={{ app_group }}
+WorkingDirectory={{ app_root }}/app
+EnvironmentFile={{ app_root }}/.env
+ExecStart={{ venv_path }}/bin/python {{ app_root }}/app/{{ entrypoint }}
+Restart=on-failure
+RestartSec=5
+UMask=0007
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+ReadWritePaths={{ app_root }}/shared
+
+[Install]
+WantedBy=multi-user.target

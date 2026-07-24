@@ -1,0 +1,21 @@
+paths:
+  apps_root: /var/www/apps
+  state_db: /var/lib/create-python-app/state.db
+  lock_file: /var/lock/create-python-app.lock
+  systemd_dir: /etc/systemd/system
+  nginx_sites_available: /etc/nginx/sites-available
+  nginx_sites_enabled: /etc/nginx/sites-enabled
+
+ports:
+  start: 8000
+  end: 8999
+
+users:
+  deploy_user: gitlab
+  create_app_user: true
+  create_app_group: true
+  add_deploy_user_to_app_group: true
+
+permissions:
+  directory_mode: "2775"
+  env_mode: "0640"
